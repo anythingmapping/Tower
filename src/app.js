@@ -1,3 +1,9 @@
+// Todo
+// building placement
+
+import { waypoints } from "./waypoints";
+import { placement_tiles_data } from "./placement_locations";
+
 console.log('js loaded');
 const canvas = document.querySelector('canvas');
 const ctx = canvas.getContext('2d');
@@ -9,21 +15,10 @@ image.onload = () => {
     animate()
 };
 
-image.src = './res/map.png';
-const placement_tiles_data = [
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 14, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 14, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 14, 0, 0, 0, 0, 0, 0,
-    0, 0, 14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 14, 0, 0, 0, 0, 0, 0,
-    0, 0, 14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 14, 0, 0, 0, 0, 0, 0,
-    0, 0, 14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 14, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 14, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 14, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 14, 0,
-    0, 0, 0, 14, 0, 14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 14, 0,
-    0, 0, 0, 14, 0, 14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 14, 0
-]
+image.src = 'map.png';
+
+
+
 
 
 const placement_tiles_data_2D = []
@@ -31,79 +26,53 @@ const placement_tiles_data_2D = []
 for (let i = 0; i < placement_tiles_data.length; i += 20) {
     placement_tiles_data_2D.push(placement_tiles_data.slice(i, i + 20))
 }
+console.log(placement_tiles_data_2D)
 
-class PlacementTile {
+class Placement_tile {
     constructor({ position = { x: 0, y: 0 } }) {
         this.position = position
         this.size = 64
+        this.color = 'rgba(255,255,255,0.5)';
     }
 
     draw() {
-        ctx.fillRect(this.position.x, this.position.y, this.size, this.size)
+        ctx.fillStyle = this.color;
+        ctx.fillRect(this.position.x, this.position.y, this.size, this.size);
     }
-}
+
+    update(mouse) {
+        this.draw();
+
+        if (mouse.x > this.position.x &&
+            mouse.x < this.position.x + this.size &&
+            mouse.y > this.position.y &&
+            mouse.y < this.position.y + this.size) {
+            console.log('a thing!!!!')
+        }
+
+
+    }
+};
 
 const placement_tiles = []
-
-placement_tiles_data_2D.forEach(row, y => {
-    row.forEach(symbol, x => {
+placement_tiles_data_2D.forEach((row, y) => {
+    row.forEach((symbol, x) => {
         if (symbol === 14) {
-            // add building placement tile
+            // add building placement tile here
             placement_tiles.push(
-                new PlacementTile({
+                new Placement_tile({
                     position: {
                         x: x * 64,
-                        y: y * 64
+                        y: y * 64,
                     }
                 })
             )
         }
-    })
-})
-
+    });
+});
 console.log(placement_tiles)
 
-const waypoints = [{
-        "x": -50,
-        "y": 538
-    },
-    {
-        "x": 354,
-        "y": 536
-    },
-    {
-        "x": 354,
-        "y": 158
-    },
-    {
-        "x": 734,
-        "y": 162
-    },
-    {
-        "x": 734,
-        "y": 416
-    },
-    {
-        "x": 604,
-        "y": 416
-    },
-    {
-        "x": 608,
-        "y": 606
-    },
-    {
-        "x": 1054,
-        "y": 606
-    },
-    {
-        "x": 1052,
-        "y": 222
-    },
-    {
-        "x": 1356,
-        "y": 222
-    }
-]
+
 class Enemy {
     constructor({ position = { x: 0, y: 0 } }) {
         this.position = position
@@ -156,4 +125,17 @@ function animate() {
     enemies.forEach((enemy) => {
         enemy.update()
     })
+    placement_tiles.forEach(tile => {
+        tile.update(mouse);
+    })
 }
+
+const mouse = {
+    x: undefined,
+    y: undefined
+}
+
+window.addEventListener('mousemove', (event) => {
+    mouse.x = event.clientX;
+    mouse.y = event.clientY;
+})
