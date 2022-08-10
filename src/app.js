@@ -1,8 +1,7 @@
-// Todo
-// building placement
-
 import { waypoints } from "./waypoints";
 import { placement_tiles_data } from "./placement_locations";
+import { Enemy } from "./enemy";
+import { Placement_tile } from "./placement_tile";
 
 console.log('js loaded');
 const canvas = document.querySelector('canvas');
@@ -20,7 +19,7 @@ image.src = 'map.png';
 
 
 
-
+// Placement tiles
 const placement_tiles_data_2D = []
 
 for (let i = 0; i < placement_tiles_data.length; i += 20) {
@@ -28,39 +27,17 @@ for (let i = 0; i < placement_tiles_data.length; i += 20) {
 }
 console.log(placement_tiles_data_2D)
 
-class Placement_tile {
-    constructor({ position = { x: 0, y: 0 } }) {
-        this.position = position
-        this.size = 64
-        this.color = 'rgba(255,255,255,0.5)';
-    }
-
-    draw() {
-        ctx.fillStyle = this.color;
-        ctx.fillRect(this.position.x, this.position.y, this.size, this.size);
-    }
-
-    update(mouse) {
-        this.draw();
-
-        if (mouse.x > this.position.x &&
-            mouse.x < this.position.x + this.size &&
-            mouse.y > this.position.y &&
-            mouse.y < this.position.y + this.size) {
-            console.log('a thing!!!!')
-        }
 
 
-    }
-};
 
+// Tile placement for player
 const placement_tiles = []
 placement_tiles_data_2D.forEach((row, y) => {
     row.forEach((symbol, x) => {
         if (symbol === 14) {
             // add building placement tile here
             placement_tiles.push(
-                new Placement_tile({
+                new Placement_tile(ctx, {
                     position: {
                         x: x * 64,
                         y: y * 64,
@@ -73,52 +50,18 @@ placement_tiles_data_2D.forEach((row, y) => {
 console.log(placement_tiles)
 
 
-class Enemy {
-    constructor({ position = { x: 0, y: 0 } }) {
-        this.position = position
-        this.width = 100
-        this.height = 100
-        this.waypoint_index = 0
-        this.center = {
-            x: this.position.x + this.width / 2,
-            y: this.position.y + this.height / 2
-        }
-    }
-    draw() {
-        ctx.fillStyle = 'red';
-        ctx.fillRect(this.position.x, this.position.y, this.width, this.height);
-    }
-    update() {
-        this.draw();
 
-
-        const waypoint = waypoints[this.waypoint_index]
-        const y_distance = waypoint.y - this.center.y;
-        const x_distance = waypoint.x - this.center.x;
-        const angle = Math.atan2(y_distance, x_distance);
-        this.position.x += Math.cos(angle);
-        this.position.y += Math.sin(angle);
-        this.center = {
-            x: this.position.x + this.width / 2,
-            y: this.position.y + this.height / 2
-        }
-
-        if (
-            Math.round(this.center.x) === Math.round(waypoint.x) &&
-            Math.round(this.center.y) === Math.round(waypoint.y) &&
-            this.waypoint_index < waypoints.length - 1) {
-            this.waypoint_index++;
-        }
-    }
-}
-
-
+// Sprint Creation
 const enemies = []
 for (let i = 1; i < 20; i++) {
     const x_offset = i * 150;
-    enemies.push(new Enemy({ position: { x: waypoints[0].x - x_offset, y: waypoints[0].y } }))
+    enemies.push(new Enemy(ctx, waypoints, { position: { x: waypoints[0].x - x_offset, y: waypoints[0].y } }))
 }
+console.log('enemies');
+console.log(enemies);
 
+
+// Animation Loop
 function animate() {
     requestAnimationFrame(animate);
     ctx.drawImage(image, 0, 0);
