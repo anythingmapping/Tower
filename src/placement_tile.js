@@ -3,7 +3,7 @@ export class Placement_tile {
         this.position = position;
         this.ctx = ctx;
         this.size = 64;
-        this.color = 'rgba(255,255,255,0.5)';
+
     }
 
     draw() {
@@ -17,9 +17,11 @@ export class Placement_tile {
         if (mouse.x > this.position.x &&
             mouse.x < this.position.x + this.size &&
             mouse.y > this.position.y &&
-            mouse.y < this.position.y + this.size) {
-            console.log('a thing!!!!')
-        }
+            mouse.y < this.position.y + this.size
+        ) {
+            console.log('collision')
+            this.color = 'white';
+        } else this.color = 'rgba(255,255,255,0.15)'
 
 
     }

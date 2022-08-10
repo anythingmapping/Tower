@@ -2,6 +2,7 @@ import { waypoints } from "./waypoints";
 import { placement_tiles_data } from "./placement_locations";
 import { Enemy } from "./enemy";
 import { Placement_tile } from "./placement_tile";
+import { Building } from "./building";
 
 console.log('js loaded');
 const canvas = document.querySelector('canvas');
@@ -60,6 +61,10 @@ for (let i = 1; i < 20; i++) {
 console.log('enemies');
 console.log(enemies);
 
+const buildings = [];
+let active_tile = undefined;
+
+
 
 // Animation Loop
 function animate() {
@@ -71,14 +76,42 @@ function animate() {
     placement_tiles.forEach(tile => {
         tile.update(mouse);
     })
+    buildings.forEach(building => { building.draw() })
 }
 
 const mouse = {
     x: undefined,
     y: undefined
-}
+};
+
+canvas.addEventListener('click', (event) => {
+    if (active_tile) {
+        buildings.push(new Building({
+            position: {
+                x: active_tile.position.x,
+                y: active_tile.position.y
+            }
+        }))
+    }
+
+})
 
 window.addEventListener('mousemove', (event) => {
     mouse.x = event.clientX;
     mouse.y = event.clientY;
+
+    active_tile = null;
+    for (let i = 0; i < placement_tiles.length; i++) {
+        const tile = placement_tiles[i];
+        if (
+            mouse.x > tile.position.x &&
+            mouse.x < tile.position.x + tile.size &&
+            mouse.y > tile.position.y &&
+            mouse.y < tile.position.y + tile.size
+        ) {
+            active_tile = tile;
+            break;
+        }
+    }
+    console.log(active_tile)
 })
