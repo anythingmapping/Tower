@@ -3,6 +3,7 @@ import { placement_tiles_data } from "./placement_locations";
 import { Enemy } from "./enemy";
 import { Placement_tile } from "./placement_tile";
 import { Building } from "./building";
+import { Projectile } from "./projectile";
 
 console.log('js loaded');
 const canvas = document.querySelector('canvas');
@@ -84,16 +85,22 @@ const mouse = {
     y: undefined
 };
 
-canvas.addEventListener('click', (event) => {
-    if (active_tile) {
-        buildings.push(new Building({
-            position: {
-                x: active_tile.position.x,
-                y: active_tile.position.y
-            }
-        }))
-    }
 
+
+canvas.addEventListener('click', (event) => {
+    if (active_tile && !active_tile.isOccupied) {
+        console.log(active_tile.position.x)
+        buildings.push(
+            new Building(ctx, {
+                position: {
+                    x: active_tile.position.x,
+                    y: active_tile.position.y
+                }
+            })
+        )
+        active_tile.isOccupied = true
+    }
+    console.log(buildings)
 })
 
 window.addEventListener('mousemove', (event) => {

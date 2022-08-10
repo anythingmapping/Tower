@@ -3,6 +3,7 @@ export class Placement_tile {
         this.position = position;
         this.ctx = ctx;
         this.size = 64;
+        this.occupied = false;
 
     }
 
