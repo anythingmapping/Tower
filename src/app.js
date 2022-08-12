@@ -19,16 +19,13 @@ image.src = 'map.png';
 
 
 
-
 // Placement tiles
 const placement_tiles_data_2D = []
 
 for (let i = 0; i < placement_tiles_data.length; i += 20) {
     placement_tiles_data_2D.push(placement_tiles_data.slice(i, i + 20))
 }
-console.log(placement_tiles_data_2D)
-
-
+// console.log(placement_tiles_data_2D)
 
 
 // Tile placement for player
@@ -48,21 +45,29 @@ placement_tiles_data_2D.forEach((row, y) => {
         }
     });
 });
-console.log(placement_tiles)
+// console.log(placement_tiles)
 
 
 
-// Sprint Creation
+// Sprite Creation
 const enemies = []
 for (let i = 1; i < 20; i++) {
     const x_offset = i * 150;
     enemies.push(new Enemy(ctx, waypoints, { position: { x: waypoints[0].x - x_offset, y: waypoints[0].y } }))
 }
-console.log('enemies');
-console.log(enemies);
+// console.log('enemies');
+// console.log(enemies);
 
 const buildings = [];
 let active_tile = undefined;
+// buildings.target = null;
+// const valid_enemies = enemies.filter((enemy) => {
+//     const x_difference = enemy.center.x - building.x;
+//     const y_difference = enemy.center.y - building.y;
+//     const distance = Math.hypot(x_difference, y_difference);
+//     return distance < enemy.radius + building.radius;
+// });
+// buildings.target = valid_enemies[0];
 
 
 
@@ -85,16 +90,21 @@ const mouse = {
 };
 
 canvas.addEventListener('click', (event) => {
-    if (active_tile) {
-        buildings.push(new Building({
-            position: {
-                x: active_tile.position.x,
-                y: active_tile.position.y
-            }
-        }))
+    if (active_tile && !active_tile.isOccupied) {
+        // console.log(active_tile.position.x)
+        buildings.push(
+            new Building(ctx, {
+                position: {
+                    x: active_tile.position.x,
+                    y: active_tile.position.y
+                }
+            })
+        )
+        active_tile.isOccupied = true
     }
-
+    // console.log(buildings)
 })
+
 
 window.addEventListener('mousemove', (event) => {
     mouse.x = event.clientX;
@@ -113,5 +123,5 @@ window.addEventListener('mousemove', (event) => {
             break;
         }
     }
-    console.log(active_tile)
+    // console.log(active_tile)
 })
