@@ -1,8 +1,4 @@
 export const waypoints = [{
-        "x": 0,
-        "y": 0
-    },
-    {
         "x": -50,
         "y": 538
     },

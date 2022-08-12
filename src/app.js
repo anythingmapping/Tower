@@ -53,6 +53,7 @@ placement_tiles_data_2D.forEach((row, y) => {
 
 /* ---------------------------  Sprint Creation --------------------------- */
 const enemies = []
+let enemy_count = 3;
 
 function spawn_enemies(spawn_count) {
     for (let i = 1; i < spawn_count + 1; i++) {
@@ -118,6 +119,13 @@ function animate() {
                     });
                     if (enemyIndex > -1) enemies.splice(enemyIndex, 1)
                 }
+
+
+                /* -------------------- tracking total number of enemies -------------------- */
+                if (enemies.length === 0) {
+                    spawn_enemies(enemy_count);
+                    enemy_count += 2;
+                };
                 console.log(projectile.enemy.health)
                 building.projectiles.splice(i, 1)
             }
