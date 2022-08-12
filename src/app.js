@@ -4,7 +4,6 @@ import { Enemy } from "./enemy";
 import { Placement_tile } from "./placement_tile";
 import { Building } from "./building";
 
-console.log('js loaded');
 const canvas = document.querySelector('canvas');
 const ctx = canvas.getContext('2d');
 ctx.fillStyle = 'white';
@@ -20,18 +19,18 @@ image.src = 'map.png';
 
 
 
-// Placement tiles
+/* ----------------------------- Placement tiles ---------------------------- */
 const placement_tiles_data_2D = []
 
 for (let i = 0; i < placement_tiles_data.length; i += 20) {
     placement_tiles_data_2D.push(placement_tiles_data.slice(i, i + 20))
 }
-console.log(placement_tiles_data_2D)
+// console.log(placement_tiles_data_2D)
 
 
 
 
-// Tile placement for player
+/* ------------------------ Tile placement for player ----------------------- */
 const placement_tiles = []
 placement_tiles_data_2D.forEach((row, y) => {
     row.forEach((symbol, x) => {
@@ -48,35 +47,83 @@ placement_tiles_data_2D.forEach((row, y) => {
         }
     });
 });
-console.log(placement_tiles)
+// console.log(placement_tiles)
 
 
 
-// Sprint Creation
+/* ---------------------------  Sprint Creation --------------------------- */
 const enemies = []
-for (let i = 1; i < 20; i++) {
-    const x_offset = i * 150;
-    enemies.push(new Enemy(ctx, waypoints, { position: { x: waypoints[0].x - x_offset, y: waypoints[0].y } }))
+
+function spawn_enemies(spawn_count) {
+    for (let i = 1; i < spawn_count + 1; i++) {
+        const x_offset = i * 150;
+        enemies.push(new Enemy(ctx, waypoints, { position: { x: waypoints[0].x - x_offset, y: waypoints[0].y } }))
+    }
 }
-console.log('enemies');
-console.log(enemies);
+
+spawn_enemies(3)
+    // console.log('enemies');
+    // console.log(enemies);
 
 const buildings = [];
 let active_tile = undefined;
 
 
 
-// Animation Loop
+/* -------------------------------------------------------------------------- */
+/*                               Animation loop                               */
+/* -------------------------------------------------------------------------- */
 function animate() {
     requestAnimationFrame(animate);
     ctx.drawImage(image, 0, 0);
-    enemies.forEach((enemy) => {
+
+    /* ------------------------------ enemy sprites ----------------------------- */
+    for (let i = enemies.length - 1; i >= 0; i--) {
+        const enemy = enemies[i]
         enemy.update()
-    })
+    }
+
+    /* ----------------------------- placement_tiles ---------------------------- */
     placement_tiles.forEach(tile => {
         tile.update(mouse);
+    });
+
+    /* ------------------------ buildings and projectiles ----------------------- */
+    buildings.forEach(building => {
+        building.update()
+        building.target = null;
+        const validEnemies = enemies.filter((enemy) => {
+            const xDifference = enemy.center.x - building.center.x
+            const yDifference = enemy.center.y - building.center.y
+            const distance = Math.hypot(xDifference, yDifference)
+            return distance < enemy.radius + building.radius
+        })
+        building.target = validEnemies[0]
+
+        for (let i = building.projectiles.length - 1; i >= 0; i--) {
+            const projectile = building.projectiles[i]
+
+            projectile.update()
+
+            const xDifference = projectile.enemy.center.x - projectile.position.x
+            const yDifference = projectile.enemy.center.y - projectile.position.y
+            const distance = Math.hypot(xDifference, yDifference)
+
+            /* ---------------------- projectile hitting the enemy ---------------------- */
+            if (distance < projectile.enemy.radius + projectile.radius) {
+                projectile.enemy.health -= 20;
+                if (projectile.enemy.health <= 0) {
+                    const enemyIndex = enemies.findIndex((enemy) => {
+                        return projectile.enemy === enemy
+                    });
+                    if (enemyIndex > -1) enemies.splice(enemyIndex, 1)
+                }
+                console.log(projectile.enemy.health)
+                building.projectiles.splice(i, 1)
+            }
+        }
+
     })
-    buildings.forEach(building => { building.draw() })
 }
 
 const mouse = {
@@ -84,9 +131,13 @@ const mouse = {
     y: undefined
 };
 
+/* -------------------------------------------------------------------------- */
+/*                               event listener                               */
+/* -------------------------------------------------------------------------- */
+
 canvas.addEventListener('click', (event) => {
     if (active_tile) {
-        buildings.push(new Building({
+        buildings.push(new Building(ctx, {
             position: {
                 x: active_tile.position.x,
                 y: active_tile.position.y
@@ -113,5 +164,5 @@ window.addEventListener('mousemove', (event) => {
             break;
         }
     }
-    console.log(active_tile)
+    // console.log(active_tile)
 })

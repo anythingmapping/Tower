@@ -10,11 +10,30 @@ export class Enemy {
             x: this.position.x + this.width / 2,
             y: this.position.y + this.height / 2
         };
+        this.radius = 50;
+        this.health = 100;
     }
     draw() {
+        // this.ctx.fillStyle = 'red';
+        // this.ctx.fillRect(this.position.x, this.position.y, this.width, this.height);
+        this.ctx.beginPath();
+        this.ctx.arc(this.center.x, this.center.y, this.radius, 0, Math.PI * 2);
+        this.ctx.fillStyle = 'purple';
+        this.ctx.fill();
+
+        // health bar
         this.ctx.fillStyle = 'red';
-        this.ctx.fillRect(this.position.x, this.position.y, this.width, this.height);
-    }
+        this.ctx.fillRect(this.position.x, this.position.y - 15, this.width, 10)
+
+        this.ctx.fillStyle = 'green';
+        this.ctx.fillRect(
+            this.position.x,
+            this.position.y - 15,
+            (this.width * this.health) / 100,
+            10
+        )
+    };
+
     update() {
         this.draw();
 

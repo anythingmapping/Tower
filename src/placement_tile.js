@@ -19,7 +19,7 @@ export class Placement_tile {
             mouse.y > this.position.y &&
             mouse.y < this.position.y + this.size
         ) {
-            console.log('collision')
+            // console.log('collision')
             this.color = 'white';
         } else this.color = 'rgba(255,255,255,0.15)'
 
