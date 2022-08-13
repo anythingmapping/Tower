@@ -12,6 +12,11 @@ export class Enemy {
         };
         this.radius = 50;
         this.health = 100;
+        this.velocity = {
+            x: 0,
+            y: 0
+        }
+
     }
     draw() {
         // this.ctx.fillStyle = 'red';
@@ -37,21 +42,26 @@ export class Enemy {
     update() {
         this.draw();
 
-
+        /* ---------------------------------- speed --------------------------------- */
         const waypoint = this.waypoints[this.waypoint_index]
         const y_distance = waypoint.y - this.center.y;
         const x_distance = waypoint.x - this.center.x;
         const angle = Math.atan2(y_distance, x_distance);
-        this.position.x += Math.cos(angle);
-        this.position.y += Math.sin(angle);
+        const speed = 4;
+        this.velocity.x = Math.cos(angle) * speed;
+        this.velocity.y = Math.sin(angle) * speed;
+        this.position.x += this.velocity.x;
+        this.position.y += this.velocity.y;
+
+        /* -------------------------------- waypoints ------------------------------- */
         this.center = {
             x: this.position.x + this.width / 2,
             y: this.position.y + this.height / 2
         }
 
         if (
-            Math.round(this.center.x) === Math.round(waypoint.x) &&
-            Math.round(this.center.y) === Math.round(waypoint.y) &&
+            Math.abs(Math.round(this.center.x) - Math.round(waypoint.x)) < Math.abs(this.velocity.x) &&
+            Math.abs(Math.round(this.center.y) - Math.round(waypoint.y)) < Math.abs(this.velocity.y) &&
             this.waypoint_index < this.waypoints.length - 1) {
             this.waypoint_index++;
         }

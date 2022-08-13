@@ -54,6 +54,7 @@ placement_tiles_data_2D.forEach((row, y) => {
 /* ---------------------------  Sprint Creation --------------------------- */
 const enemies = []
 let enemy_count = 3;
+let hearts = 10;
 
 function spawn_enemies(spawn_count) {
     for (let i = 1; i < spawn_count + 1; i++) {
@@ -62,7 +63,7 @@ function spawn_enemies(spawn_count) {
     }
 }
 
-spawn_enemies(3)
+spawn_enemies(1)
     // console.log('enemies');
     // console.log(enemies);
 
@@ -82,7 +83,27 @@ function animate() {
     for (let i = enemies.length - 1; i >= 0; i--) {
         const enemy = enemies[i]
         enemy.update()
+
+        if (enemy.position.x > canvas.width) {
+            enemies.splice(i, 1);
+
+            if (hearts <= 0) {
+                console.log('game over');
+            }
+            hearts -= 1;
+            console.log(hearts);
+            console.log(enemies);
+            console.log('hit point');
+        }
     }
+
+
+
+    /* -------------------- spawning waves -------------------- */
+    if (enemies.length === 0) {
+        spawn_enemies(enemy_count);
+        enemy_count += 2;
+    };
 
     /* ----------------------------- placement_tiles ---------------------------- */
     placement_tiles.forEach(tile => {
@@ -121,11 +142,7 @@ function animate() {
                 }
 
 
-                /* -------------------- tracking total number of enemies -------------------- */
-                if (enemies.length === 0) {
-                    spawn_enemies(enemy_count);
-                    enemy_count += 2;
-                };
+
                 console.log(projectile.enemy.health)
                 building.projectiles.splice(i, 1)
             }
