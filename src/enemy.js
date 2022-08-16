@@ -16,15 +16,55 @@ export class Enemy {
             x: 0,
             y: 0
         }
+        this.image = new Image();
+        this.image.src = './orc.png';
+        this.frames_max = {
+            max: 7,
+            current: 0,
+            elapsed: 0,
+            hold: 2
+        };
 
     }
     draw() {
         // this.ctx.fillStyle = 'red';
         // this.ctx.fillRect(this.position.x, this.position.y, this.width, this.height);
-        this.ctx.beginPath();
-        this.ctx.arc(this.center.x, this.center.y, this.radius, 0, Math.PI * 2);
-        this.ctx.fillStyle = 'purple';
-        this.ctx.fill();
+        const crop_width = this.image.width / this.frames_max.max;
+        const crop = {
+            position: {
+                x: crop_width * this.frames_max.current,
+                y: 0
+            },
+            width: crop_width,
+            height: this.image.height
+        }
+
+        this.ctx.drawImage(
+            this.image,
+            crop.position.x,
+            crop.position.y,
+            crop.width,
+            crop.height,
+            this.position.x,
+            this.position.y,
+            crop.width,
+            crop.height
+        );
+
+        this.frames_max.elapsed++;
+        if (this.frames_max.elapsed % this.frames_max.hold === 0) {
+            this.frames_max.current++;
+            if (this.frames_max.current > this.frames_max.max - 1) {
+                this.frames_max.current = 0;
+            }
+
+        };
+
+
+        // this.ctx.beginPath();
+        // this.ctx.arc(this.center.x, this.center.y, this.radius, 0, Math.PI * 2);
+        // this.ctx.fillStyle = 'purple';
+        // this.ctx.fill();
 
         // health bar
         this.ctx.fillStyle = 'red';

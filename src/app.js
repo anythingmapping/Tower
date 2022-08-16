@@ -1,5 +1,6 @@
 import { waypoints } from "./waypoints";
 import { placement_tiles_data } from "./placement_locations";
+
 import { Enemy } from "./enemy";
 import { Placement_tile } from "./placement_tile";
 import { Building } from "./building";
@@ -11,7 +12,7 @@ ctx.fillRect(0, 2, canvas.width, canvas.height);
 
 const image = new Image();
 image.onload = () => {
-    animate()
+    animate();
 };
 
 image.src = 'map.png';
@@ -23,7 +24,7 @@ image.src = 'map.png';
 const placement_tiles_data_2D = []
 
 for (let i = 0; i < placement_tiles_data.length; i += 20) {
-    placement_tiles_data_2D.push(placement_tiles_data.slice(i, i + 20))
+    placement_tiles_data_2D.push(placement_tiles_data.slice(i, i + 20));
 }
 // console.log(placement_tiles_data_2D)
 
@@ -53,13 +54,16 @@ placement_tiles_data_2D.forEach((row, y) => {
 
 /* ---------------------------  Sprint Creation --------------------------- */
 const enemies = []
+let active_tile = undefined;
 let enemy_count = 3;
 let hearts = 10;
+let coins = 100;
+const buildings = [];
 
 function spawn_enemies(spawn_count) {
     for (let i = 1; i < spawn_count + 1; i++) {
         const x_offset = i * 150;
-        enemies.push(new Enemy(ctx, waypoints, { position: { x: waypoints[0].x - x_offset, y: waypoints[0].y } }))
+        enemies.push(new Enemy(ctx, waypoints, { position: { x: waypoints[0].x - x_offset, y: waypoints[0].y } }));
     }
 }
 
@@ -67,8 +71,7 @@ spawn_enemies(1)
     // console.log('enemies');
     // console.log(enemies);
 
-const buildings = [];
-let active_tile = undefined;
+
 
 
 
@@ -76,7 +79,8 @@ let active_tile = undefined;
 /*                               Animation loop                               */
 /* -------------------------------------------------------------------------- */
 function animate() {
-    requestAnimationFrame(animate);
+    const animationID = requestAnimationFrame(animate);
+
     ctx.drawImage(image, 0, 0);
 
     /* ------------------------------ enemy sprites ----------------------------- */
@@ -86,14 +90,18 @@ function animate() {
 
         if (enemy.position.x > canvas.width) {
             enemies.splice(i, 1);
+            hearts -= 1;
+            document.querySelector('#hearts').innerHTML = hearts;
 
             if (hearts <= 0) {
                 console.log('game over');
+                cancelAnimationFrame(animationID);
+                document.querySelector('#gameOver').style.display = 'flex';;
             }
-            hearts -= 1;
-            console.log(hearts);
-            console.log(enemies);
-            console.log('hit point');
+
+            // console.log(hearts);
+            // console.log(enemies);
+            // console.log('hit point');
         }
     }
 
@@ -138,12 +146,16 @@ function animate() {
                     const enemyIndex = enemies.findIndex((enemy) => {
                         return projectile.enemy === enemy
                     });
-                    if (enemyIndex > -1) enemies.splice(enemyIndex, 1)
+                    if (enemyIndex > -1) {
+                        enemies.splice(enemyIndex, 1);
+                        coins += 25;
+                        document.querySelector('#coins').innerHTML = coins;
+                    }
                 }
 
 
 
-                console.log(projectile.enemy.health)
+                // console.log(projectile.enemy.health)
                 building.projectiles.splice(i, 1)
             }
         }
@@ -161,13 +173,16 @@ const mouse = {
 /* -------------------------------------------------------------------------- */
 
 canvas.addEventListener('click', (event) => {
-    if (active_tile) {
+    if (active_tile && !active_tile.isOccupied && coins - 50 >= 0) {
+        coins -= 50;
+        document.querySelector('#coins').innerHTML = coins;
         buildings.push(new Building(ctx, {
             position: {
                 x: active_tile.position.x,
                 y: active_tile.position.y
             }
-        }))
+        }));
+        active_tile.isOccupied = true;
     }
 
 })

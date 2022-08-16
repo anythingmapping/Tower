@@ -8,13 +8,16 @@ export class Projectile {
         this.ctx = ctx;
         this.enemy = enemy;
         this.radius = 10;
+        this.image = new Image();
+        this.image.src = './projectile.png';
     }
 
     draw() {
-        this.ctx.beginPath()
-        this.ctx.arc(this.position.x, this.position.y, this.radius, 0, Math.PI * 2)
-        this.ctx.fillStyle = 'orange'
-        this.ctx.fill()
+        this.ctx.drawImage(this.image, this.position.x, this.position.y);
+        // this.ctx.beginPath();
+        // this.ctx.arc(this.position.x, this.position.y, this.radius, 0, Math.PI * 2);
+        // this.ctx.fillStyle = 'orange';
+        // this.ctx.fill();
     }
 
     update() {
@@ -26,10 +29,10 @@ export class Projectile {
         )
 
         const power = 5
-        this.velocity.x = Math.cos(angle) * power
-        this.velocity.y = Math.sin(angle) * power
+        this.velocity.x = Math.cos(angle) * power;
+        this.velocity.y = Math.sin(angle) * power;
 
-        this.position.x += this.velocity.x
-        this.position.y += this.velocity.y
+        this.position.x += this.velocity.x;
+        this.position.y += this.velocity.y;
     }
 }
